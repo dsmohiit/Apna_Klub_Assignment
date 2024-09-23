@@ -78,9 +78,9 @@ ORDER BY total_placed_gmv DESC;
 ```sql
 CREATE TABLE user_behaviour AS 
 (SELECT user_id, 
-CASE 
-	WHEN COUNT(quantity) > 2 THEN 'repeat_customer'
-	ELSE 'new_customer'
+CASE
+    WHEN COUNT(*) > 2 THEN 'repeat_customer'
+    ELSE 'new_customer'
 END AS "customer_type"
 FROM apna_klub
 GROUP BY user_id);
