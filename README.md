@@ -49,7 +49,7 @@ GROUP BY sku_id
 ORDER BY total_placed_gmv DESC LIMIT 10;
 ```
 ### Order Trends over Time: Analyze the order trends over time. 
-- Calculate the total number of orders, total placed_gmv, and average order value per month or quarter. 
+- Calculate the total number of orders, total placed_gmv, and average order value per quarter. 
 - Identify any seasonal patterns or trends.
 ```sql
 SELECT EXTRACT(YEAR FROM order_date) AS "year",
@@ -89,35 +89,25 @@ GROUP BY user_id);
 - Analyzing the correlation between sales of similar sku_ids.
 ```sql
 WITH monthly_sales AS (
-    SELECT
-        DATE_TRUNC('month', order_date) AS month,
+    SELECT DATE_TRUNC('month', order_date) AS month,
         sku_id,
         SUM(quantity) AS total_quantity,
         SUM(placed_gmv) AS total_gmv
-    FROM
-        apna_klub
-    GROUP BY
-        DATE_TRUNC('month', order_date),
-        sku_id
+    FROM apna_klub
+    GROUP BY DATE_TRUNC('month', order_date), sku_id
 ),
 product_pairs AS (
-    SELECT
-        a.sku_id AS sku_id1,
+    SELECT a.sku_id AS sku_id1,
         b.sku_id AS sku_id2,
         CORR(a.total_quantity, b.total_quantity) AS quantity_correlation,
         CORR(a.total_gmv, b.total_gmv) AS gmv_correlation
-    FROM
-        monthly_sales a
-    JOIN
-        monthly_sales b ON a.month = b.month AND a.sku_id < b.sku_id
-    GROUP BY
-        a.sku_id,
-        b.sku_id
-    HAVING
-        COUNT(*) >= 6  -- Require at least 6 months of data for correlation
+    FROM monthly_sales a
+    JOIN monthly_sales b
+    ON a.month = b.month AND a.sku_id < b.sku_id
+    GROUP BY a.sku_id, b.sku_id
+    HAVING COUNT(*) >= 6  -- Having at least 6 months of data for correlation
 )
-SELECT
-    sku_id1,
+SELECT sku_id1,
     sku_id2,
     ROUND(quantity_correlation::numeric, 2) AS quantity_correlation,
     ROUND(gmv_correlation::numeric, 2) AS gmv_correlation,
@@ -129,11 +119,7 @@ SELECT
         WHEN quantity_correlation BETWEEN 0.3 AND 0.5 OR gmv_correlation BETWEEN 0.3 AND 0.5 THEN 'Moderate Positive'
         ELSE 'Strong Positive'
     END AS correlation_interpretation
-FROM
-    product_pairs
-WHERE
-    quantity_correlation < -0.3 OR gmv_correlation < -0.3
-ORDER BY
-    LEAST(quantity_correlation, gmv_correlation) ASC
-LIMIT 20;
+FROM product_pairs
+WHERE quantity_correlation < -0.3 OR gmv_correlation < -0.3
+ORDER BY LEAST(quantity_correlation, gmv_correlation) ASC LIMIT 20;
 ```
