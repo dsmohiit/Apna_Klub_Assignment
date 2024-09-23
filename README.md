@@ -22,7 +22,7 @@ CREATE TABLE apna_klub(
 	placed_gmv FLOAT
 );
 ```
-# Analysis
+# Analysis:
 ### User Order Analysis: Analyzing the order patterns of users. 
 - Calculating the total number of orders, average order value, and total placed_gmv per 'user'. 
 - Identifying the top 10 'users' by total placed_gmv.
