@@ -1,4 +1,4 @@
-# Apna_Klub_Assignment
+# Apna-Klub Assignment
 Apnaklub is a B2B wholesale platform empowering India's retailers and kiranas by connecting them directly to brands and wholesalers. We provide a seamless, tech-driven solution for small retailers to source inventory at competitive prices, helping them optimise their supply chain and improve profitability. Our mission is to simplify wholesale distribution and create a stronger, more inclusive retail ecosystem across the country. 
 # Data Description:
 - user_id: Unique identifier for a particular user.
